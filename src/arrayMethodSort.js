@@ -6,8 +6,6 @@
 function applyCustomSort() {
   [].__proto__.sort2 = function (compareFunction) {
     const arr = this;
-    const n = arr.length;
-
     const compareFunction1 =
       compareFunction ||
       function (a, b) {
@@ -24,21 +22,35 @@ function applyCustomSort() {
         if (!aIsUpper && bIsUpper) {
           return 1;
         }
+
         return aStr.localeCompare(bStr);
       };
 
-    let swapped;
+    function quickSort(array) {
+      if (array.length <= 1) {
+        return array;
+      }
 
-    do {
-      swapped = false;
+      const pivot = array[0];
+      const left = [];
+      const right = [];
 
-      for (let i = 0; i < n - 1; i++) {
-        if (compareFunction1(arr[i], arr[i + 1]) > 0) {
-          [arr[i], arr[i + 1]] = [arr[i + 1], arr[i]];
-          swapped = true;
+      for (let i = 1; i < array.length; i++) {
+        if (compareFunction1(array[i], pivot) <= 0) {
+          left.push(array[i]);
+        } else {
+          right.push(array[i]);
         }
       }
-    } while (swapped);
+
+      return [...quickSort(left), pivot, ...quickSort(right)];
+    }
+
+    const sorted = quickSort(arr.slice());
+
+    for (let i = 0; i < arr.length; i++) {
+      arr[i] = sorted[i];
+    }
 
     return arr;
   };
